@@ -1,0 +1,1 @@
+删除libs下的armeabi和armeabi-v7a文件夹，jar包还是放在libs下面不变，然后在src/main下面创建jniLibs文件夹（注意大小写），然后在其下创建armeabi文件夹，将so文件拷入该路径下即可正确加载
