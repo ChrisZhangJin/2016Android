@@ -1,0 +1,20 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:chris="http://schemas.android.com/apk/res/com.example.customviewtest"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="${relativePackage}.${activityClass}" >
+
+    <com.example.customviewtest.ColorOptionView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        chris:titleText="This is a test"
+        chris:valueColor="@android:color/darker_gray" >
+    </com.example.customviewtest.ColorOptionView>
+
+    <TextView android:layout_width="fill_parent"
+        android:layout_height="20dp"
+        android:text="up up up!"/>
+</LinearLayout>
