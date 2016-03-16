@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -22,20 +23,38 @@ import chris.zhang.nanjinginhand.util.Constants;
 /**
  * Created by Administrator on 2016/3/5.
  */
-public class SlidingSwitcher extends RelativeLayout {
+public class SlidingSwitcher extends ViewGroup {
 
     public static final int SNAP_VELOCITY = 200;
     public static float xDown;
     public static float xUp;
     public static float xMove;
 
+    /***
+     * 该组件的宽度
+     */
     private int width;
     private int currentItemIndex;
-    private int itemCount;
+    /***
+     * 边界数组，用于记录各个图片显示的边界。
+     * 假设组件width=4，第一个临界点为0，那么第二个为-4，第二个为-8，第三个为-12
+     *    pic4      pic3      pic2     pic1
+     *    -12        -8        -4       0
+     */
     private int[] borders;
+    /***
+     * 边界数组中最左边的边界点
+     */
     private int leftEdge = 0;
+    /***
+     * 边界数组中最右边的边界点
+     */
     private int rightEdge = 0;
-    private LinearLayout itemsLayout;
+    /***
+     * 内部Layout，包含了内部子组件
+     */
+    private ViewGroup imageGroup;
+    private int itemCount;
     private LinearLayout dotsLayout;
     private View firstItem;
     private MarginLayoutParams firstItemParams;
@@ -87,22 +106,32 @@ public class SlidingSwitcher extends RelativeLayout {
         }, 3000, 3000);
     }
 
+    /***
+     * 初始化菜单元素，为每一个子元素增加监听事件，并且改变所有子元素的宽度，让它们等于父元素的宽度。
+     */
     private void initializeItems(){
+
+        imageGroup = (ViewGroup)getChildAt(0);  // the first one should be a Layout!!
+        if(imageGroup == null) return;
+
+        itemCount = imageGroup.getChildCount();
         width = getWidth();
-        itemsLayout = (LinearLayout)getChildAt(0);
-        itemCount = itemsLayout.getChildCount();
         borders = new int[itemCount];
-        for(int i=0;i<itemCount; i++){
-            borders[i] = -i*width;
-            View item = itemsLayout.getChildAt(i);
-            MarginLayoutParams params = (MarginLayoutParams)item.getLayoutParams();
+        for (int i = 0; i < itemCount; i++) {
+            borders[i] = -i * width; // 初始化边界点。
+
+            /***
+             *  set every pic's width as wide as parent
+             */
+            View item = imageGroup.getChildAt(i);
+            MarginLayoutParams params = (MarginLayoutParams) item.getLayoutParams();
             params.width = width;
             item.setLayoutParams(params);
         }
 
         leftEdge = borders[itemCount - 1];
-        firstItem = itemsLayout.getChildAt(0);
-        firstItemParams = (MarginLayoutParams)firstItem.getLayoutParams();
+        firstItem = imageGroup.getChildAt(0);
+        firstItemParams = (MarginLayoutParams) firstItem.getLayoutParams();
     }
 
     private void initializeDots() {
@@ -137,11 +166,11 @@ public class SlidingSwitcher extends RelativeLayout {
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        super.onLayout(changed, l, t, r, b);
+        //super.onLayout(changed, l, t, r, b);
 
         Log.i(Constants.TAG, "onLayout event.");
 
-        if(changed){
+        if (changed) {
             initializeItems();
             initializeDots();
         }
